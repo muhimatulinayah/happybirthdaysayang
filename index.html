@@ -506,7 +506,7 @@ body{display:flex;align-items:center;justify-content:center;font-family:Arial,sa
       <span class="blink-dot bd3"></span><span class="blink-dot bd4"></span>
       <span class="blink-dot bd5"></span><span class="blink-dot bd6"></span>
     </div>
-    <button id="loveStart" class="love-cover-hotspot" type="button" data-go="1" aria-label="Tekan love untuk lanjut"></button>
+    <button id="loveStart" class="love-cover-hotspot" type="button" aria-label="Tekan love untuk lanjut"></button>
   </div>
 </section>
 <section class="page" id="page1">
@@ -807,7 +807,9 @@ if(page4El){
 }
 
 window.addEventListener('popstate',e=>{
-  const n=e.state?.page || Number((location.hash||'#p0').slice(2)) || 1;
+  const hash=location.hash;
+  const hashPage=/^#p[0-6]$/.test(hash) ? Number(hash.slice(2)) : null;
+  const n=Number.isInteger(e.state?.page) ? e.state.page : (hashPage===null ? 0 : hashPage);
   showPage(n,false);
 });
 
@@ -998,8 +1000,11 @@ document.addEventListener('visibilitychange',()=>{
   }
 });
 
-const initial=Number((location.hash||'#p0').slice(2));
-showPage(initial>=0&&initial<=6?initial:0,false);
+// Saat halaman dibuka langsung dari GitHub Pages, selalu mulai dari halaman 0.
+// Hash #p1/#p2 lama pada URL tidak boleh membuat halaman otomatis melompat.
+const initial=0;
+history.replaceState({page:0},'',location.pathname+location.search+'#p0');
+showPage(initial,false);
 </script>
 </body>
 </html>
